@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-const API_BASE = "";
 
 function Connect({ onConnected }) {
   const [dbType, setDbType] = useState('SQLite (Upload)');
@@ -45,7 +44,7 @@ function Connect({ onConnected }) {
         formData.append('connection_string', str);
       }
 
-      const resp = await fetch(`${API_BASE}/api/db/connect`, {
+      const resp = await fetch(`/api/db/connect`, {
         method: 'POST',
         body: formData,
       });

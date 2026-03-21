@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 
-const API_BASE = "";
 
 function Dashboard({ token, onLoadModel, onConnectNew }) {
   const [models, setModels] = useState([]);
@@ -12,7 +11,7 @@ function Dashboard({ token, onLoadModel, onConnectNew }) {
 
   const fetchModels = async () => {
     try {
-      const resp = await fetch(`${API_BASE}/api/models`, {
+      const resp = await fetch(`/api/models`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (resp.ok) {
@@ -24,7 +23,7 @@ function Dashboard({ token, onLoadModel, onConnectNew }) {
 
   const handleModelClick = async (model) => {
     try {
-      const resp = await fetch(`${API_BASE}/api/models/${model.id}/load`, {
+      const resp = await fetch(`/api/models/${model.id}/load`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -44,7 +43,7 @@ function Dashboard({ token, onLoadModel, onConnectNew }) {
     if (!window.confirm("Are you sure you want to completely delete this database model?")) return;
     
     try {
-      const resp = await fetch(`${API_BASE}/api/models/${modelId}`, {
+      const resp = await fetch(`/api/models/${modelId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

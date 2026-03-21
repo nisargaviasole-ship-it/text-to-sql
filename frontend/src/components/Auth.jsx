@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-const API_BASE = "";
 
 function Auth({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -13,7 +12,7 @@ function Auth({ onLogin }) {
     setError(null);
     try {
       if (!isLogin) {
-        const resp = await fetch(`${API_BASE}/api/auth/register`, {
+        const resp = await fetch(`/api/auth/register`, {
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },
            body: JSON.stringify({ username, password })
@@ -30,7 +29,7 @@ function Auth({ onLogin }) {
         formData.append('username', username);
         formData.append('password', password);
 
-        const resp = await fetch(`${API_BASE}/api/auth/login`, {
+        const resp = await fetch(`/api/auth/login`, {
            method: 'POST',
            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
            body: formData

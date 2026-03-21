@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 
-const API_BASE = "";
 
 const EXTRACT_MESSAGES = [
   "Please wait, we are fetching the data...",
@@ -42,7 +41,7 @@ function Training({ sessionInfo, onComplete, onError }) {
 
   useEffect(() => {
     if (phase === 'extracting') {
-      const source = new EventSource(`${API_BASE}/api/db/train/${sessionInfo.sessionId}`);
+      const source = new EventSource(`/api/db/train/${sessionInfo.sessionId}`);
 
       source.onmessage = (e) => {
         if (e.data === "keepalive") return;
@@ -80,9 +79,9 @@ function Training({ sessionInfo, onComplete, onError }) {
 
   const fetchSchemaReport = async () => {
     try {
-      let resp = await fetch(`${API_BASE}/api/session/${sessionInfo.sessionId}/schema-report`);
+      let resp = await fetch(`/api/session/${sessionInfo.sessionId}/schema-report`);
       if (!resp.ok) {
-        resp = await fetch(`${API_BASE}/api/db/tables/${sessionInfo.sessionId}`);
+        resp = await fetch(`/api/db/tables/${sessionInfo.sessionId}`);
       }
       const data = await resp.json();
       if (!Array.isArray(data)) throw new Error(data.detail || "Invalid schema data");
@@ -108,7 +107,7 @@ function Training({ sessionInfo, onComplete, onError }) {
         }))
       };
 
-      const resp = await fetch(`${API_BASE}/api/db/train-with-input`, {
+      const resp = await fetch(`/api/db/train-with-input`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
