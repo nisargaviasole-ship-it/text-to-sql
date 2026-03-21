@@ -880,6 +880,8 @@ async def chat_query(request: Request, body: ChatRequest):
 
     memory = get_session_memory(body.session_id)
     conversation_context = memory.get_context_for_prompt()
+    last_error = ""
+    zero_rows_on_last_attempt = False
     max_retries = 3
     last_error = ""
     JSON_REMINDER = (
@@ -889,6 +891,12 @@ async def chat_query(request: Request, body: ChatRequest):
     )
     question = await corrector.correct(body.question)
     logger.info(f"Corrected Text : {question}")
+    if not ctx.connection_string:
+        raise HTTPException(
+            status_code=400,
+            detail="This session was restored from an upload and cannot run new queries. Please re-upload your file."
+        )
+    engine = connector.from_connection_string(ctx.connection_string)
     for attempt in range(max_retries):
         try:
             # Step 1: Plan
@@ -933,15 +941,9 @@ async def chat_query(request: Request, body: ChatRequest):
 
             safe_sql = val_result.sql
             logger.debug(f"Executing validated SQL (length: {len(safe_sql)} chars)")
-            if not ctx.connection_string:
-                raise HTTPException(
-                    status_code=400,
-                    detail="This session was restored from an upload and cannot run new queries. Please re-upload your file."
-                )
-            engine = connector.from_connection_string(ctx.connection_string)
+            
             # Step 4: Execute
-            last_error = ""
-            zero_rows_on_last_attempt = False
+            
             result = await executor.execute(engine, safe_sql)
             if not result.rows and not result.error:
                 zero_rows_on_last_attempt = True
@@ -992,16 +994,6 @@ async def chat_query(request: Request, body: ChatRequest):
                 filters_applied=[],
             ))
 
-            if zero_rows_on_last_attempt:
-                no_data_text = await formatter._humanize_no_data(question)
-                return ChatResponse(
-                    mode="no_data",
-                    text_summary=no_data_text,
-                    sql_used=safe_sql,
-                    page=1,
-                    pages_total=1,
-                )
-
 
             return ChatResponse(
                 mode=formatted.mode,
@@ -1027,6 +1019,15 @@ async def chat_query(request: Request, body: ChatRequest):
                 f"[ERROR: {last_error}. Try a different approach.]"
                 f"{JSON_REMINDER}"
             )
+    if zero_rows_on_last_attempt:
+        no_data_text = await formatter._humanize_no_data(question)
+        return ChatResponse(
+            mode="no_data",
+            text_summary=no_data_text,
+            sql_used="",
+            page=1,
+            pages_total=1,
+        )
 
     return ChatResponse(
         mode="empty",

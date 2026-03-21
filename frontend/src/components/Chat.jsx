@@ -4,7 +4,6 @@ import {
   PieChart, Pie, Cell
 } from 'recharts';
 
-const API_BASE = "";
 
 const PaginatedTable = ({ columns, data }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -300,7 +299,7 @@ function Chat({ sessionInfo }) {
     setInitialLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const resp = await fetch(`${API_BASE}/api/chat/threads`, {
+      const resp = await fetch(`/api/chat/threads`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (resp.ok) {
@@ -318,7 +317,7 @@ function Chat({ sessionInfo }) {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const resp = await fetch(`${API_BASE}/api/chat/threads/${threadId}/messages`, {
+      const resp = await fetch(`/api/chat/threads/${threadId}/messages`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (resp.ok) {
@@ -362,7 +361,7 @@ function Chat({ sessionInfo }) {
       let activeThreadId = currentThreadId;
       const token = localStorage.getItem('token');
       if (!activeThreadId) {
-        const tResp = await fetch(`${API_BASE}/api/chat/threads`, {
+        const tResp = await fetch(`/api/chat/threads`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
           body: JSON.stringify({ db_session_id: sessionInfo.sessionId, title: question.substring(0, 30) })
@@ -375,7 +374,7 @@ function Chat({ sessionInfo }) {
         }
       }
 
-      const resp = await fetch(`${API_BASE}/api/chat/query`, {
+      const resp = await fetch(`/api/chat/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session_id: sessionInfo.sessionId, question, page: 1, thread_id: activeThreadId })

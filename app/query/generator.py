@@ -68,12 +68,10 @@ class SQLGenerator:
         session_id: str = '07acccf1-21fb-47d4-bf90-aaa83f047cfd',
     ) -> GenerationResult:
         schema_context = build_enriched_schema(plan, session_id)
-        print(schema_context)
         history_block = f"\n{conversation_context}\n" if conversation_context else ""
-        logger.info(f"History : {history_block}")
+        logger.info(f"Hstory block for SQL generation (length {len(history_block)} chars): {history_block}")
         # history_block = ""
         max_rows = self.settings.query.max_rows_per_query
-        logger.info(f"MAX Rows : {max_rows}")
         # Pre-compute dialect syntax OUTSIDE the f-string to avoid expression-in-brace bugs
         if plan.dialect.lower() == "sqlserver":
             limit_syntax = f"Place TOP {max_rows} immediately after SELECT: SELECT TOP {max_rows} col1, col2 ..."
@@ -138,9 +136,7 @@ class SQLGenerator:
             1. ONLY use tables listed in SCHEMA.
             2. ONLY use columns listed under each table.
             3. NEVER invent columns.
-            4. If a required column does not exist in schema → return:
-            {{"sql": "", "reason": "column_not_found_in_schema"}}
-            
+            4. NEVER invent tables.
             5. JOIN tables ONLY using FK relationships listed in SCHEMA.
             
             6. Use aliases: t1, t2, t3, t4
@@ -321,7 +317,7 @@ class SQLGenerator:
             - Do NOT write plain text explanations
             - Do NOT ask clarifying questions in plain text  
             - Do NOT say "I need more information" in plain text
-            - If you cannot generate SQL → return JSON with sql="" and chat_response explaining why
+            - Never add chat_response for no relevnt columns found or join path issues. Just return sql="" and a clear reason.
             - If the name cannot be found → still attempt SQL searching all name columns
             - EVERY response must be valid JSON, no exceptions
             For DATABASE intent:
