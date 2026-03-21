@@ -24,7 +24,7 @@ function App() {
   const disconnect = async () => {
     if (sessionInfo.sessionId) {
       try {
-        await fetch(`http://localhost:8000/api/session/${sessionInfo.sessionId}`, {
+        await fetch(`/api/session/${sessionInfo.sessionId}`, {
           method: 'DELETE'
         });
       } catch (err) {
@@ -44,7 +44,7 @@ function App() {
   const handleSaveAndChat = async () => {
     if (token && sessionInfo.sessionId) {
       try {
-        await fetch(`http://localhost:8000/api/models/save`, {
+        await fetch(`/api/models/save`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

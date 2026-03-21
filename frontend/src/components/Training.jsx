@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "";
 
 const EXTRACT_MESSAGES = [
   "Please wait, we are fetching the data...",

@@ -4,7 +4,7 @@ import {
   PieChart, Pie, Cell
 } from 'recharts';
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "";
 
 const PaginatedTable = ({ columns, data }) => {
   const [currentPage, setCurrentPage] = useState(1);
