@@ -240,9 +240,11 @@ if not APP_DATABASE_URL:
 
 def init_app_db():
     assert APP_DATABASE_URL is not None, "APP_DATABASE_URL environment variable is not set."
-    engine_args = {}
-    if "sqlite" in APP_DATABASE_URL:   # ✓ Pylance now knows it's str
-        engine_args = {"connect_args": {"check_same_thread": False}}
+    engine_args = {
+        "connect_args": {"sslmode": "require"},
+        "pool_pre_ping": True,
+        "pool_recycle": 300,
+    }
     engine = create_engine(APP_DATABASE_URL, **engine_args)
     Base.metadata.create_all(engine)
     return sessionmaker(bind=engine, expire_on_commit=False)
