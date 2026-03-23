@@ -5,13 +5,16 @@ from dataclasses import dataclass
 
 from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance, PointStruct, Filter, FieldCondition, MatchValue
-
+import os
 from app.config import get_settings
 from app.utils.gemini_key_manager import get_key_manager
-
+from dotenv import load_dotenv
 logger = logging.getLogger(__name__)
 EMBEDDING_DIM = 3072
+load_dotenv()
 
+QRANT_URL = os.getenv("QDRANT_URL")
+QRANT_API_KEY = os.getenv("QDRNT_API_KEY")
 
 @dataclass
 class EntityChunk:
@@ -25,8 +28,8 @@ class EntityChunk:
 def _qdrant_client() -> QdrantClient:
     s = get_settings()
     return QdrantClient(
-        url="https://1e3848ab-b68d-441c-beda-d086923df770.us-east4-0.gcp.cloud.qdrant.io",
-        api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.rXXjSwuYvpQ_xagT0PI-wRCieyldSWBI5yIcM4SMRI4",
+        url=QRANT_URL,
+        api_key=QRANT_API_KEY,
         prefer_grpc=False,
     )
 
